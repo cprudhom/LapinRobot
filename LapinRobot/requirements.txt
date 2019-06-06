@@ -1,0 +1,6 @@
+pyserial
+matplotlib
+numpy
+time
+pyqt5
+scipy
