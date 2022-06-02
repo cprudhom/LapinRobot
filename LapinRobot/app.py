@@ -9,33 +9,38 @@ import sys
 from PyQt5.QtWidgets import QApplication
 
 
-
-
 def main():
-    glob.start, glob.stop, glob.export = start, stop, export
+    glob.start, glob.inject, glob.stop, glob.export = start, inject, stop, export
     glob.running = False
     glob.robot = arduino.Arduino()
     glob.app = QApplication(sys.argv)
     glob.window = interface.Window()
     sys.exit(glob.app.exec_())
-    reset_t0()
 
 
 def start(chart):
-    print("Started")
+    print('Start')
     glob.running = True
-    glob.state = 0 #  reinit
-    glob.adrenaline_running, glob.acetylcholine_running, glob.need_change_file = False, False, False
+    glob.state = glob.State.Rest  # reinit
     data = data_file.DataFile()
-    reset_t0()
-
+    t = 0
+    cur_tim = time.time_ns()
     while glob.running:
-        t = get_time()
-        data_line = data.get_data(t)
-        f_heart, f_breath, f_urea = int(data_line[4]), int(6000/data_line[5]), 10
-        glob.robot.arduino_communication(f_heart, f_breath, f_urea)
-        chart.update_chart(t/1000, data_line[1]-data.delta_files)
-        time.sleep(0.01)
+        csts = data.get_data()
+        print(csts)
+        real_sleep_duration = (cur_tim + glob.TIME_TO_WAIT - time.time_ns()) / glob.IN_NS
+        time.sleep(real_sleep_duration)
+
+        glob.robot.arduino_communication(csts)
+        t += csts['TT']
+        chart.update_chart(t, csts['FC'])
+        cur_tim = time.time_ns()
+
+
+def inject(molecule):
+    print("Inject", molecule)
+    glob.state = glob.State[molecule]
+    glob.need_change_file = True
 
 
 def stop():
@@ -48,7 +53,7 @@ def export(name, xdata, ydata):
         if name[-8:] == ".txt.txt":
             name = name[:-4]
         file = open(name, "w")
-        #file.write("t (ms)\tPression Arterielle\n")
+        # file.write("t (ms)\tPression Arterielle\n")
         for i in range(len(glob.tdata)):
             line = str(glob.tdata[i]) + "\t" + str(glob.ydata[i]) + "\n"
             file.write(line)
@@ -57,13 +62,6 @@ def export(name, xdata, ydata):
     else:
         print("Export aborted")
 
-
-def get_time():
-    return int(round(time.time() * 1000) - glob.t0)
-
-
-def reset_t0():
-    glob.t0 = int(round(time.time() * 1000))
 
 
 if __name__ == "__main__":

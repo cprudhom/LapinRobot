@@ -1,6 +1,7 @@
-pyserial
-matplotlib
-numpy
-time
-pyqt5
-scipy
+pyserial~=3.5
+matplotlib~=3.5.1
+numpy~=1.21.2
+pyqt5~=5.15.6
+backend~=0.2.4.1
+frontend~=0.0.3
+pandas~=1.4.0
