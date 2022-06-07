@@ -26,7 +26,7 @@ TIME_TO_WAIT = FREQUENCY * NUMBER_OF_LINES * IN_NS
 
 debug = True
 
-path = 'COM7'
+port = 'COM7'
 baudrate = 2000000
 
 rest_file_name = None

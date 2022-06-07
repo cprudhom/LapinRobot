@@ -10,7 +10,7 @@ import struct
 class Arduino:
 
     def __init__(self):
-        self.ser = serial.Serial(path=glob.path, baudrate=glob.baudrate)
+        self.ser = serial.Serial(port=glob.port, baudrate=glob.baudrate)
         time.sleep(1)
 
     def arduino_communication(self, csts):
