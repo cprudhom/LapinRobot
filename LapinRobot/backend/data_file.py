@@ -1,90 +1,105 @@
 # coding: utf-8
 
-import backend.myGlobal as glob
+import backend.myGlobal as Glob
 
 import os
 import random as rd
 import pandas as pd
-import time
-import numpy as np
+from collections import defaultdict
+import lzma
+
+
+def get_key(name, keys):
+    if name in keys or len(keys) == 0:
+        return name
+    else:
+        for key in keys:
+            if name.startswith(key):
+                return key
+    return None
 
 
 class DataFile:
 
-    def __init__(self, filename=None):
-        glob.initFile = None
-        if (filename is None):
-            self.get_random_file()
-        else:
-            self.filename = filename
+    def __init__(self, directory, keys, channels, stable_state):
+        self.map = defaultdict(list)
+        self.channels = channels
+        self.stable_state = stable_state
+        Glob.cur_state = stable_state
+        self.filename = None
+        self.data = None
+        self.line_number = 0
+        self.nb_of_lines = 0
+        for root, dirs, files in os.walk(directory):
+            for file in files:
+                push = False
+                name = file
+                if file.endswith(".txt"):
+                    name = file[:-4]
+                    push = True
+                elif file.endswith(".txt.lzma"):
+                    name = file[:-9]
+                    push = True
+                if push:
+                    key = get_key(name, keys)
+                    if key is not None:
+                        self.map[key].append(os.path.join(root, file))
+
+        Glob.states = [e for e in self.map.keys() if e != stable_state]
+
+    def init(self):
+        self.pick_random_file()
         self.open_file()
-        glob.rest_file_name = self.filename
+        Glob.rest_file_name = self.filename
 
-    def get_random_file(self):
-        directory = self.get_directory()
-        files = os.listdir(directory)
-        if glob.debug:
-            self.filename = directory + "test.csv"
-        else:
-            self.filename = directory + rd.choice(files)
-        while not self.filename.endswith(".csv"):
-            self.filename = directory + rd.choice(files)
-
-    def get_directory(self):
-        if glob.state == glob.State.Adrenaline and glob.need_change_file:
-            directory = "./public/data/adrenaline/"
-        elif glob.state == glob.State.Acetylcholine and glob.need_change_file:
-            directory = "./public/data/acetylcholine/"
-        else:
-            directory = "./public/data/rest/"
-        glob.need_change_file = False
-        return directory
+    def pick_random_file(self):
+        self.filename = rd.choice(self.map[Glob.cur_state])
 
     def open_file(self):
-        self.data = pd.read_csv(self.filename, sep=";")
-        print(self.data)
-        print(self.data.index)
-        print(self.data.columns)
-        print(self.data.shape)
+        print('Open ', self.filename)
+        if self.filename.endswith(".txt.lzma"):
+            with lzma.open(self.filename, "r") as f:
+                self.data = pd.read_csv(f, sep='\t')
+        elif self.filename.endswith(".txt"):
+            self.data = pd.read_csv(self.filename, sep='\t')
+
         self.line_number = 1
         self.nb_of_lines = len(self.data)
 
     def change_file(self):
-        if glob.state == glob.State.Rest:
-            self.filename = glob.rest_file_name
-        else:
-            self.get_random_file()
-
+        self.pick_random_file()
         self.open_file()
 
-    def get_data(self):
+    def read_data(self, chnls):
+        """ Read the data to be sent to the robot and the chart """
         self.check_event()
-        cstes = {o.name: 0 for o in glob.Observation}
-        for _ in range(glob.NUMBER_OF_LINES):
-            for o in glob.Observation:
-                cstes[o.name] += self.data.loc[self.line_number, o.name]
+        cstes = {channel['id']: 0 for channel in self.channels}
+        for _ in range(Glob.NUMBER_OF_LINES):
+            for channel in self.channels:
+                cstes[channel['id']] += self.data.loc[self.line_number, channel['name']]
+                if channel['name'] in chnls:
+                    Glob.tdata[channel['id']].append(Glob.tdata[channel['id']][-1] + Glob.FREQUENCY)
+                    Glob.ydata[channel['id']].append(self.data.loc[self.line_number, channel['name']])
             self.line_number += 1
-        for o in glob.Observation:
-            cstes[o.name] /= glob.NUMBER_OF_LINES
-        cstes['TT'] = glob.NUMBER_OF_LINES * glob.FREQUENCY  # time in ms
+        for channel in self.channels:
+            cstes[channel['id']] /= Glob.NUMBER_OF_LINES
         return cstes
 
     def check_event(self):
-        if (self.line_number + glob.NUMBER_OF_LINES > len(self.data)):
-            glob.state = glob.State.Rest
-            glob.window.rest_back()
-            glob.need_change_file = True
+        if self.line_number + Glob.NUMBER_OF_LINES > len(self.data):
+            Glob.cur_state = self.stable_state
+            Glob.window.rest_back()
+            Glob.need_change_file = True
 
-        if glob.need_change_file:
+        if Glob.need_change_file:
             self.change_file()
-            glob.need_change_file = False
+            Glob.need_change_file = False
 
 
 if __name__ == "__main__":
     print("-------------------------")
-    for i in range(5):
-        data = DataFile(filename="../public/data/rest/test.csv")
-        print("FICHIER: ", data.filename[15:])
-        t0 = time.time()
-        dict = data.get_data()
-        print(dict)
+    data = DataFile(directory="../public/data/Cardio_Respi/Data_2016", keys=[], channels={},
+                    stable_state='Sansinjection')
+    for k in sorted(data.map.keys()):
+        print(k)
+        print(data.map[k])

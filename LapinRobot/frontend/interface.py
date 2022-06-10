@@ -1,7 +1,7 @@
 # coding: utf-8
 
 import frontend.embedded_graph as graph
-import backend.myGlobal as glob
+import backend.myGlobal as Glob
 
 from PyQt5.QtWidgets import QWidget, QPushButton, QGroupBox, QVBoxLayout, QHBoxLayout, QFileDialog, QComboBox
 from PyQt5 import QtGui
@@ -10,13 +10,13 @@ from PyQt5 import QtCore
 
 class Window(QWidget):
 
-    def __init__(self):
+    def __init__(self, settings):
         super().__init__()
         self.title = "Lapin Robot"
-        self.top = 100
-        self.left = 100
-        self.width = 800
-        self.height = 500
+        self.top = 10
+        self.left = 10
+        self.width = 1400
+        self.height = 2200
         self.icon_name = "public/img/rabbit-icon.png"
 
         self.setWindowTitle(self.title)
@@ -24,7 +24,7 @@ class Window(QWidget):
         self.setGeometry(self.left, self.top, self.width, self.height)
 
         self.make_menu()
-        self.make_chart()
+        self.make_chart(settings)
 
         window_layout = QVBoxLayout()
         window_layout.addWidget(self.menu)
@@ -46,7 +46,7 @@ class Window(QWidget):
         self.combo_box = QComboBox(self)
         menu_layout.addWidget(self.combo_box)
         self.combo_box.setDisabled(True)
-        self.combo_box.addItems(glob.molecules)
+        self.combo_box.addItems(Glob.states)
 
         self.inject_btn = self.create_button("Inject", "public/img/jet-icon.png")
         menu_layout.addWidget(self.inject_btn)
@@ -70,11 +70,9 @@ class Window(QWidget):
         button.setMinimumHeight(40)
         return button
 
-    def make_chart(self):
+    def make_chart(self, settings):
         graph_width = 30
-        graph_min_y = 0
-        graph_max_y = 160
-        self.chart = graph.DynamicChart(graph_width, graph_min_y, graph_max_y)
+        self.chart = graph.DynamicChart(settings, graph_width)
 
     def set_events(self):
         self.start_btn.clicked.connect(self.start)
@@ -90,7 +88,7 @@ class Window(QWidget):
         self.export_btn.setDisabled(True)
 
         self.chart.reinit_graph()
-        glob.start(self.chart)
+        Glob.start(self.chart)
 
     def inject(self):
         self.combo_box.setEnabled(False)
@@ -98,7 +96,7 @@ class Window(QWidget):
         txt = self.combo_box.currentText()
         self.combo_box.removeItem(idx)
         self.inject_btn.setEnabled(False)
-        glob.inject(txt)
+        Glob.inject(txt)
 
     def rest_back(self):
         if len(self.combo_box) > 0:
@@ -109,16 +107,16 @@ class Window(QWidget):
         self.start_btn.setEnabled(True)
         self.combo_box.setDisabled(True)
         self.combo_box.clear()
-        self.combo_box.addItems(glob.molecules)
+        self.combo_box.addItems(Glob.states)
         self.inject_btn.setDisabled(True)
         self.stop_btn.setDisabled(True)
-        #self.export_btn.setEnabled(True)
+        # self.export_btn.setEnabled(True)
 
-        glob.stop()
+        Glob.stop()
 
     def export(self):
         name = str(QFileDialog.getSaveFileName(self, 'Exporter', '', '*.txt')).split(",")[0][2:-1] + '.txt'
-        glob.export(name.strip(), self.chart.xdata, self.chart.ydata)
+        Glob.export(name.strip(), self.chart.xdata, self.chart.ydata)
 
     def closeEvent(self, event):
         self.stop()
