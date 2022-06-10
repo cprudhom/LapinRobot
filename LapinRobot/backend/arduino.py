@@ -17,7 +17,7 @@ class Arduino:
 
     def arduino_communication(self, csts):
         msg = str(csts[self.fc]) + 'c' + str(csts[self.fr]) + 'r'
-        #print(msg)
+        # print(msg)
         self.ser.write(msg.encode())
 
     def close(self):

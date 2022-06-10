@@ -7,7 +7,8 @@ file to init global variables in every files imported as glob
 IN_NS = 1e9  # for duration in nanoseconds
 FREQUENCY = 0.005  # one line every 5 ms
 NUMBER_OF_LINES = 40  # bunch of lines
-TIME_TO_WAIT = FREQUENCY * NUMBER_OF_LINES * IN_NS
+MIN_NB_LINES = 20 # ~ 100 ms
+MAX_NB_LINES = 100 # ~ 500 ms
 
 # Store the configuration
 settings = None

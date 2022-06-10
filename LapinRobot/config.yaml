@@ -1,6 +1,6 @@
 data:
   # Dossier contenant les tracés
-  directory: './public/data/Cardio_Respi/Data_2016/'
+  directory: './public/data/Cardio_Respi/Data_2016/savatier'
   channels:
     - name: 'CH1'
       description: 'spirométrie (amplitude ventilation)'
@@ -31,4 +31,4 @@ arduino:
 
 plotting:
   # name of the channel to plot
-  channels: ['CH1', 'CH2', 'CH40', 'CH41']
+  channels: ['CH1', 'CH2']#, 'CH40', 'CH41']

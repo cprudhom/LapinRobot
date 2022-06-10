@@ -34,17 +34,23 @@ def start(chart):
     Glob.running = True
     Glob.cur_state = Glob.data.stable_state
     data = Glob.data
-    cur_tim = time.time_ns()
+    time0 = time.time_ns()
+    virtual_time = 0
+    ttw = Glob.FREQUENCY * Glob.NUMBER_OF_LINES * Glob.IN_NS
     while Glob.running:
         csts = data.read_data(Glob.plot_channels)
-        # print(csts)
-        real_sleep_duration = (cur_tim + Glob.TIME_TO_WAIT - time.time_ns()) / Glob.IN_NS
-        # print("Sleep ", real_sleep_duration)
-        time.sleep(real_sleep_duration)
-
         Glob.robot.arduino_communication(csts)
         chart.update_chart()
-        cur_tim = time.time_ns()
+        virtual_time += ttw
+        elapsed_time = time.time_ns() - time0
+        real_sleep_duration = (virtual_time - elapsed_time) / Glob.IN_NS  # turn in sec
+        gap = int(real_sleep_duration / Glob.FREQUENCY)  # in ms
+        if real_sleep_duration > 0:
+            time.sleep(real_sleep_duration)
+        # adapt nb lines to read
+        Glob.NUMBER_OF_LINES = min(Glob.MAX_NB_LINES, max(Glob.MIN_NB_LINES, Glob.NUMBER_OF_LINES - gap))
+        print(Glob.NUMBER_OF_LINES)
+        ttw = Glob.FREQUENCY * Glob.NUMBER_OF_LINES * Glob.IN_NS
 
 
 def inject(molecule):
