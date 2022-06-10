@@ -23,7 +23,7 @@ def main():
     Glob.running = False
 
     # 3. Start app
-    Glob.robot = arduino.Arduino(**settings['arduino'])
+    Glob.robot = arduino.Arduino(settings['data']['channels'], **settings['arduino'])
     Glob.app = QApplication(sys.argv)
     Glob.window = interface.Window(settings)
     sys.exit(Glob.app.exec_())

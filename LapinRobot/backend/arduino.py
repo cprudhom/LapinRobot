@@ -7,13 +7,17 @@ import time
 
 class Arduino:
 
-    def __init__(self, port, baudrate):
+    def __init__(self, channels, port, baudrate, coeur, poumon):
         self.ser = serial.Serial(port=port, baudrate=baudrate)
+        ch = next(filter(lambda c: c['name'] == coeur, channels), None)
+        self.fc = ch['id']
+        ch = next(filter(lambda c: c['name'] == poumon, channels), None)
+        self.fr = ch['id']
         time.sleep(1)
 
     def arduino_communication(self, csts):
-        msg = str(csts['FC']) + 'c' + str(csts['FR']) + 'r'
-        print(msg)
+        msg = str(csts[self.fc]) + 'c' + str(csts[self.fr]) + 'r'
+        #print(msg)
         self.ser.write(msg.encode())
 
     def close(self):
