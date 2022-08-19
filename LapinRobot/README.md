@@ -1,6 +1,6 @@
 # Contenu du GitHub 
 
-Le Github est composé de 4 dossiers : 
+Le Github est composé de 5 dossiers : 
 
 - Le dossier "Code Arduino" comprends le code "AutoConst_Rabbit" qui doit être compilier et transverser dans la carte Arduino avec le logiciel Arduino
 
