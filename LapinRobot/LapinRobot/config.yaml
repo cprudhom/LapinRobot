@@ -3,24 +3,24 @@ data:
   directory: './public/data/Cardio_Respi/Data_2016/savatier'
   channels:
     - name: 'CH1'
-      description: 'spirométrie (amplitude ventilation)'
+      description: 'spirometrie (amplitude ventilation)'
       id: 'SP'
       bounds: [-2, 2]
     - name: 'CH2'
-      description: 'Pression artérielle, en mmHg'
+      description: 'Pression arterielle, en mmHg'
       id: 'PA'
       bounds: [5, 300]
     - name: 'CH40'
-      description: 'Fréquence ventilatoire, en ventilations/min'
+      description: 'Frequence ventilatoire, en ventilations/min'
       id: 'FV'
       bounds: [0, 50]
     - name: 'CH41'
-      description: 'Fréquence cardiaque, en BPM'
+      description: 'Frequence cardiaque, en BPM'
       id: 'FC'
       bounds: [0, 300]
-  # Prefixes des fichiers à collecter. Si vide, tout est collecté
+  # Prefixes des fichiers à collecter. Si vide, tout est collecte
   keys: []#['Sansinjection', 'Adrenaline', 'Acetylcholine']
-  # Prefixe des fichiers correspondant à l'état repos
+  # Prefixe des fichiers correspondant à l'etat repos
   stable_state: 'Sansinjection'
 
 arduino:
@@ -31,4 +31,4 @@ arduino:
 
 plotting:
   # name of the channel to plot
-  channels: ['CH1', 'CH2']#, 'CH40', 'CH41']
+  channels: ['CH40', 'CH41','CH1', 'CH2']

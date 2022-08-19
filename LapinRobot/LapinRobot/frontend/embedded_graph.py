@@ -17,8 +17,7 @@ class DynamicChart(FingureCanvas):
 
         Glob.plot_channels = settings['plotting']['channels']
         channels = settings['data']['channels']
-        self.fig, self.axes = plt.subplots(nrows=len(Glob.plot_channels), ncols=1,
-                                           squeeze=False)  # squeeze=False to deal with 1 channel selected
+        self.fig, self.axes = plt.subplots(nrows=len(Glob.plot_channels), ncols=1, squeeze=False)  # squeeze=False to deal with 1 channel selected
         self.lines = defaultdict(list)
         Glob.tdata = defaultdict(list)
         Glob.ydata = defaultdict(list)

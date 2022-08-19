@@ -16,7 +16,7 @@ class Arduino:
         time.sleep(1)
 
     def arduino_communication(self, csts):
-        msg = str(csts[self.fc]) + 'c' + str(csts[self.fr]) + 'r'
+        msg = str(csts[self.fc]) + 'c' + str(csts[self.fr]) + 'r' #+ str(75) +'f'
         # print(msg)
         self.ser.write(msg.encode())
 
