@@ -57,14 +57,20 @@ class DataFile:
 
     def open_file(self):
         print('Open ', self.filename)
-        if self.filename.endswith(".txt.lzma"):
-            with lzma.open(self.filename, "r") as f:
-                self.data = pd.read_csv(f, sep='\t')
-        elif self.filename.endswith(".txt"):
-            self.data = pd.read_csv(self.filename, sep='\t')
+        self.load_data('.')
+        # check delimiters, to deal with ',' separated decimal
+        if isinstance(self.data.iloc[1][0], str):
+            self.load_data(',')
 
         self.line_number = 1
         self.nb_of_lines = len(self.data)
+
+    def load_data(self, decimal="."):
+        if self.filename.endswith(".txt.lzma"):
+            with lzma.open(self.filename, "r") as f:
+                self.data = pd.read_csv(f, sep='\t', decimal=decimal)
+        elif self.filename.endswith(".txt"):
+            self.data = pd.read_csv(self.filename, sep='\t', decimal=decimal)
 
     def change_file(self):
         self.pick_random_file()
