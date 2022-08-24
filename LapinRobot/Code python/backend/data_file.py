@@ -84,9 +84,10 @@ class DataFile:
             for channel in self.channels:
                 cstes[channel['id']] += self.data.loc[self.line_number, channel['name']]
                 if channel['name'] in chnls:
-                    Glob.tdata[channel['id']].append(Glob.tdata[channel['id']][-1] + Glob.FREQUENCY)
+                    Glob.tdata[channel['id']].append(Glob.time)
                     Glob.ydata[channel['id']].append(self.data.loc[self.line_number, channel['name']])
             self.line_number += 1
+            Glob.time += Glob.FREQUENCY
         for channel in self.channels:
             cstes[channel['id']] /= Glob.NUMBER_OF_LINES
         return cstes

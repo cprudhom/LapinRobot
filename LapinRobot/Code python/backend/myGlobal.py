@@ -22,6 +22,7 @@ app = None
 window = None
 running = False
 
+time = 0
 tdata = None
 ydata = None
 
