@@ -1,0 +1,30 @@
+data:
+  # Dossier contenant les tracés
+  directory: './public/data/Cardio_Renale/Bouvier'
+  channels:
+    - name: 'Diurese'
+      description: 'Diurèse (volume des urines émises)'
+      id: 'D'
+      bounds: [60, 110]
+    - name: 'Blood Pressure'
+      description: 'Pression arterielle, en mmHg'
+      id: 'BP'
+      bounds: [40, 100]
+    - name: 'Heart Rate'
+      description: 'Frequence cardiaque, en BPM'
+      id: 'FC'
+      bounds: [0, 300]
+  # Prefixes des fichiers à collecter. Si vide, tout est collecte
+  keys: []#['Sansinjection', 'Adrenaline', 'Acetylcholine']
+  # Prefixe des fichiers correspondant à l'etat repos
+  stable_state: 'Sansinjection'
+
+arduino:
+  port: 'COM3'
+  baudrate: 2000000
+  buzzer: 'Diurese'
+  coeur: 'Heart Rate'
+
+plotting:
+  # name of the channel to plot
+  channels: ['Diurese', 'Blood Pressure','Heart Rate']

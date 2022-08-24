@@ -1,6 +1,7 @@
 # coding: utf-8
 
 from frontend import interface
+from frontend import choice
 from backend import arduino, data_file
 import backend.myGlobal as Glob
 import time
@@ -11,6 +12,9 @@ from PyQt5.QtWidgets import QApplication
 
 
 def main():
+    Glob.app = QApplication(sys.argv)
+    Glob.window = choice.basicRadiobuttonExample()
+
     # 1. Load configuration
     with open('config.yaml', 'r') as file:
         settings = yaml.safe_load(file)
