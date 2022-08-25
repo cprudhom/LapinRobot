@@ -21,7 +21,7 @@ def get_key(name, keys):
 
 class DataFile:
 
-    def __init__(self, directory, keys, channels, stable_state):
+    def __init__(self, directory, keys, stable_state, channels, **kwargs):
         self.map = defaultdict(list)
         self.channels = channels
         self.stable_state = stable_state

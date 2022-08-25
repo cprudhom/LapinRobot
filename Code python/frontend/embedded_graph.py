@@ -6,14 +6,12 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FingureCanva
 import backend.myGlobal as Glob
 
 class DynamicChart(FingureCanvas):
-    def __init__(self, settings, width, parent=None):
+    def __init__(self, channels, width, parent=None):
         self.min_t = 0
         self.max_t = width
         self.graph_width = width
         self.margin_t = 0.1 * width
 
-        Glob.plot_channels = settings['plotting']['channels']
-        channels = settings['data']['channels']
         self.fig, self.axes = plt.subplots(nrows=len(Glob.plot_channels), ncols=1, squeeze=False)  # squeeze=False to deal with 1 channel selected
         self.lines = defaultdict(list)
         Glob.tdata = defaultdict(list)

@@ -12,24 +12,13 @@ from PyQt5.QtWidgets import QApplication
 
 
 def main():
+    Glob.start, Glob.inject, Glob.stop, Glob.export = start, inject, stop, export
     Glob.app = QApplication(sys.argv)
-    Glob.window = choice.basicRadiobuttonExample()
-
     # 1. Load configuration
     with open('config.yaml', 'r') as file:
         settings = yaml.safe_load(file)
 
-    # 2. Init global variables
-    Glob.start, Glob.inject, Glob.stop, Glob.export = start, inject, stop, export
-    Glob.data = data_file.DataFile(**settings['data'])
-    Glob.plot_channels = settings['plotting']['channels']
-    Glob.data.init()
-    Glob.running = False
-
-    # 3. Start app
-    Glob.robot = arduino.Arduino(settings['data']['channels'], **settings['arduino'])
-    Glob.app = QApplication(sys.argv)
-    Glob.window = interface.Window(settings)
+    Glob.window = choice.Selection(settings)
     sys.exit(Glob.app.exec_())
 
 

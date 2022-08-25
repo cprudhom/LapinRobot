@@ -10,7 +10,7 @@ from PyQt5 import QtCore
 
 class Window(QWidget):
 
-    def __init__(self, settings):
+    def __init__(self, channels):
         super().__init__()
         self.title = "Lapin Robot"
         self.top = 10
@@ -24,7 +24,7 @@ class Window(QWidget):
         self.setGeometry(self.left, self.top, self.width, self.height)
 
         self.make_menu()
-        self.make_chart(settings)
+        self.make_chart(channels)
 
         window_layout = QVBoxLayout()
         window_layout.addWidget(self.menu)
@@ -70,9 +70,9 @@ class Window(QWidget):
         button.setMinimumHeight(40)
         return button
 
-    def make_chart(self, settings):
+    def make_chart(self, channels):
         graph_width = 30
-        self.chart = graph.DynamicChart(settings, graph_width)
+        self.chart = graph.DynamicChart(channels, graph_width)
 
     def set_events(self):
         self.start_btn.clicked.connect(self.start)

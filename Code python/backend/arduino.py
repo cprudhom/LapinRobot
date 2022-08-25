@@ -7,20 +7,43 @@ import time
 
 class Arduino:
 
-    def __init__(self, channels, port, baudrate, coeur, poumon):
-        self.ser = serial.Serial(port=port, baudrate=baudrate)
+    def __init__(self, channels, port, baudrate, coeur, poumon, buzzer, mock):
+        self.mock = mock
+        if not self.mock:
+            self.ser = serial.Serial(port=port, baudrate=baudrate)
+        self.fs = {}
         ch = next(filter(lambda c: c['name'] == coeur, channels), None)
-        self.fc = ch['id']
+        if ch is not None:
+            self.fs['fc'] = ch['id']
         ch = next(filter(lambda c: c['name'] == poumon, channels), None)
-        self.fr = ch['id']
+        if ch is not None:
+            self.fs['fr'] = ch['id']
+        ch = next(filter(lambda c: c['name'] == buzzer, channels), None)
+        if ch is not None:
+            self.fs['fd'] = ch['id']
         time.sleep(1)
 
     def arduino_communication(self, csts):
-        msg = str(csts[self.fc]) + 'c' + str(csts[self.fr]) + 'r' #+ str(75) +'f'
-        # print(msg)
-        self.ser.write(msg.encode())
+        fc, fr, fd = 90, 20, 75
+        if 'fc' in self.fs:
+            fc = csts[self.fs['fc']]
+        if 'fr' in self.fs:
+            fr = csts[self.fs['fr']]
+        if 'fd' in self.fs:
+            fd = csts[self.fs['fd']]
 
-    def close(self):
+        msg = str(fc) + 'c' + \
+              str(fr) + 'r' + \
+              str(fd) + 'd'  # + str(75) +'f'
+
+        if not self.mock:
+            self.ser.write(msg.encode())
+        else:
+            print(msg)
+
+
+def close(self):
+    if not self.mock:
         self.ser.close()
 
 
